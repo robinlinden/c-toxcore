@@ -9,14 +9,9 @@ add_flag -Weverything
 
 # Disable specific warning flags for both C and C++.
 
-# TODO(iphydf): Clean these up. Probably all of these are actual bugs.
-add_flag -Wno-cast-align
 # Very verbose, not very useful. This warns about things like int -> uint
 # conversions that change sign without a cast and narrowing conversions.
 add_flag -Wno-conversion
-# TODO(iphydf): Check enum values when received from the user, then assume
-# correctness and remove this suppression.
-add_flag -Wno-covered-switch-default
 # Due to clang's tolower() macro being recursive
 # https://github.com/TokTok/c-toxcore/pull/481
 add_flag -Wno-disabled-macro-expansion
