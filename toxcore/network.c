@@ -405,16 +405,24 @@ bool set_socket_dualstack(Socket sock)
 
 static uint32_t data_0(uint16_t buflen, const uint8_t *buffer)
 {
-    // TODO(iphydf): Do this differently. Right now this is most likely a
-    // misaligned memory access in reality, and definitely undefined behaviour
-    // in terms of C standard.
-    const uint8_t *const start = buffer + 1;
-    return buflen > 4 ? net_ntohl(*(const uint32_t *)start) : 0;
+    if (buflen < 5) {
+        return 0;
+    }
+
+    uint32_t bytes;
+    memcpy(&bytes, buffer + 1, sizeof(uint32_t));
+    return net_ntohl(bytes);
 }
+
 static uint32_t data_1(uint16_t buflen, const uint8_t *buffer)
 {
-    const uint8_t *const start = buffer + 5;
-    return buflen > 7 ? net_ntohl(*(const uint32_t *)start) : 0;
+    if (buflen < 8) {
+        return 0;
+    }
+
+    uint32_t bytes;
+    memcpy(&bytes, buffer + 5, sizeof(uint32_t));
+    return net_ntohl(bytes);
 }
 
 static void loglogdata(const Logger *log, const char *message, const uint8_t *buffer,
