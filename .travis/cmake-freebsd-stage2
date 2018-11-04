@@ -48,7 +48,6 @@ travis_script() {
   add_ld_flag -Wl,-z,defs
 
   # Make compilation error on a warning
-  add_flag -Werror
 
   RUN 'cmake -B_build -H. \
     -DCMAKE_C_FLAGS="$C_FLAGS" \

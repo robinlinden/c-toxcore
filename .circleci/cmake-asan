@@ -5,7 +5,6 @@ set -eu
 CACHEDIR="$HOME/cache"
 
 . ".travis/flags-$CC.sh"
-add_flag -Werror
 add_flag -fdiagnostics-color=always
 add_flag -fsanitize=address,undefined
 cmake -B_build -H. -GNinja			\

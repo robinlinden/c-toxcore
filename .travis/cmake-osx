@@ -20,7 +20,6 @@ travis_script() {
   add_ld_flag -undefined error
 
   # Make compilation error on a warning
-  add_flag -Werror
 
   cmake -B_build -H. \
     -DCMAKE_C_FLAGS="$C_FLAGS" \
