@@ -267,7 +267,7 @@ void tox_pass_key_free(struct Tox_Pass_Key *_key);
  * @param passphrase The user-provided password. Can be empty.
  * @param passphrase_len The length of the password.
  *
- * @return true on success.
+ * @return a new Tox_Pass_Key object on success or NULL on failure.
  */
 struct Tox_Pass_Key *tox_pass_key_derive(const uint8_t *passphrase, size_t passphrase_len,
         TOX_ERR_KEY_DERIVATION *error);
@@ -279,7 +279,7 @@ struct Tox_Pass_Key *tox_pass_key_derive(const uint8_t *passphrase, size_t passp
  * @param passphrase_len The length of the password.
  * @param salt An array of at least TOX_PASS_SALT_LENGTH bytes.
  *
- * @return true on success.
+ * @return a new Tox_Pass_Key object on success or NULL on failure.
  */
 struct Tox_Pass_Key *tox_pass_key_derive_with_salt(const uint8_t *passphrase, size_t passphrase_len,
         const uint8_t *salt, TOX_ERR_KEY_DERIVATION *error);

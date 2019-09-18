@@ -118,7 +118,7 @@ bool tox_get_salt(const uint8_t *data, uint8_t *salt, Tox_Err_Get_Salt *error)
  * Note that this function is not deterministic; to derive the same key from a
  * password, you also must know the random salt that was used. See below.
  *
- * returns true on success
+ * @return a new Tox_Pass_Key object on success or NULL on failure.
  */
 Tox_Pass_Key *tox_pass_key_derive(const uint8_t *passphrase, size_t pplength,
                                   Tox_Err_Key_Derivation *error)

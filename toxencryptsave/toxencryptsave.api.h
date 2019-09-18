@@ -215,7 +215,7 @@ class pass_Key {
    * @param passphrase The user-provided password. Can be empty.
    * @param passphrase_len The length of the password.
    *
-   * @return true on success.
+   * @return a new $this object on success or NULL on failure.
    */
   static this derive(const uint8_t[passphrase_len] passphrase)
       with error for key_derivation;
@@ -227,7 +227,7 @@ class pass_Key {
    * @param passphrase_len The length of the password.
    * @param salt An array of at least $PASS_SALT_LENGTH bytes.
    *
-   * @return true on success.
+   * @return a new $this object on success or NULL on failure.
    */
   static this derive_with_salt(const uint8_t[passphrase_len] passphrase, const uint8_t[PASS_SALT_LENGTH] salt)
       with error for key_derivation;
