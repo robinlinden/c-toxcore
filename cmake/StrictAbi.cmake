@@ -12,7 +12,7 @@
 find_program(SHELL NAMES sh dash bash zsh fish)
 
 macro(make_version_script)
-  if(STRICT_ABI AND SHELL AND ENABLE_SHARED)
+  if(STRICT_ABI AND SHELL AND BUILD_SHARED_LIBS)
     _make_version_script(${ARGN})
   endif()
 endmacro()
@@ -53,7 +53,7 @@ if(WIN32 OR APPLE)
   set(STRICT_ABI OFF)
 endif()
 
-if(STRICT_ABI AND NOT ENABLE_STATIC)
+if(STRICT_ABI AND BUILD_SHARED_LIBS)
   if(AUTOTEST)
     message("AUTOTEST option is incompatible with STRICT_ABI. Disabling AUTOTEST.")
   endif()

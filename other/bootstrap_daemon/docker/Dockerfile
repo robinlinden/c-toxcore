@@ -26,8 +26,7 @@ RUN export BUILD_PACKAGES="\
     cd _build && \
     cmake .. \
       -DCMAKE_BUILD_TYPE=Release \
-      -DENABLE_SHARED=ON \
-      -DENABLE_STATIC=OFF \
+      -DBUILD_SHARED_LIBS=ON \
       -DBUILD_TOXAV=OFF \
       -DBOOTSTRAP_DAEMON=ON && \
     make -j`nproc` && \

@@ -323,11 +323,8 @@ endif()
 #
 ################################################################################
 
-# Create combined library from all the sources.
-add_module(toxcore ${toxcore_SOURCES})
-
-# Link it to all dependencies.
-target_link_modules(toxcore ${toxcore_LINK_MODULES})
+add_library(toxcore ${toxcore_SOURCES})
+target_link_libraries(toxcore ${toxcore_LINK_MODULES})
 
 # Make version script (on systems that support it) to limit symbol visibility.
 make_version_script(toxcore ${toxcore_API_HEADERS})
@@ -362,7 +359,7 @@ unit_test(toxcore util)
 add_library(misc_tools
   testing/misc_tools.c
   testing/misc_tools.h)
-target_link_modules(misc_tools toxcore)
+target_link_libraries(misc_tools toxcore)
 
 set(TEST_TIMEOUT_SECONDS "" CACHE STRING "Limit runtime of each test to the number of seconds specified")
 
@@ -384,7 +381,7 @@ function(auto_test target)
   if(AUTOTEST AND NOT (MSVC AND ARGV1 STREQUAL "MSVC_DONT_BUILD"))
     add_executable(auto_${target}_test ${CPUFEATURES}
       auto_tests/${target}_test.c)
-    target_link_modules(auto_${target}_test toxcore misc_tools)
+    target_link_libraries(auto_${target}_test toxcore misc_tools)
     if(NOT ARGV1 STREQUAL "DONT_RUN")
       add_test(NAME ${target} COMMAND ${CROSSCOMPILING_EMULATOR} auto_${target}_test)
       set_tests_properties(${target} PROPERTIES TIMEOUT "${TEST_TIMEOUT_SECONDS}")
@@ -450,7 +447,7 @@ if(DHT_BOOTSTRAP)
   add_executable(DHT_bootstrap ${CPUFEATURES}
     other/DHT_bootstrap.c
     other/bootstrap_node_packets.c)
-  target_link_modules(DHT_bootstrap toxcore misc_tools)
+  target_link_libraries(DHT_bootstrap toxcore misc_tools)
   install(TARGETS DHT_bootstrap RUNTIME DESTINATION bin)
 endif()
 
@@ -480,7 +477,7 @@ if(BOOTSTRAP_DAEMON)
       other/bootstrap_daemon/src/tox-bootstrapd.c
       other/bootstrap_node_packets.c
       other/bootstrap_node_packets.h)
-    target_link_modules(tox-bootstrapd toxcore ${LIBCONFIG_LIBRARIES})
+    target_link_libraries(tox-bootstrapd toxcore ${LIBCONFIG_LIBRARIES})
     install(TARGETS tox-bootstrapd RUNTIME DESTINATION bin)
   endif()
 endif()
@@ -497,7 +494,7 @@ if(NOT WIN32
   AND SNDFILE_FOUND AND PORTAUDIO_FOUND AND OPENCV_FOUND)
   add_executable(av_test ${CPUFEATURES}
     testing/av_test.c)
-  target_link_modules(av_test
+  target_link_libraries(av_test
     toxcore
     ${OPENCV_LIBRARIES}
     ${PORTAUDIO_LIBRARIES}
@@ -513,17 +510,17 @@ option(BUILD_MISC_TESTS "Build additional tests" OFF)
 if (BUILD_MISC_TESTS)
   add_executable(DHT_test ${CPUFEATURES}
     testing/DHT_test.c)
-  target_link_modules(DHT_test toxcore misc_tools)
+  target_link_libraries(DHT_test toxcore misc_tools)
 
   add_executable(Messenger_test ${CPUFEATURES}
     testing/Messenger_test.c)
-  target_link_modules(Messenger_test toxcore misc_tools)
+  target_link_libraries(Messenger_test toxcore misc_tools)
 
   add_executable(random_testing ${CPUFEATURES}
     testing/random_testing.cc)
-  target_link_modules(random_testing toxcore misc_tools)
+  target_link_libraries(random_testing toxcore misc_tools)
 
   add_executable(save-generator
     other/fun/save-generator.c)
-  target_link_modules(save-generator toxcore misc_tools)
+  target_link_libraries(save-generator toxcore misc_tools)
 endif()
