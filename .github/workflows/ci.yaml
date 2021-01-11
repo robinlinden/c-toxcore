@@ -39,36 +39,38 @@ jobs:
     - uses: actions/checkout@v2
     - run: ./.travis/${{ github.job }}
 
-  # FIXME(robinlinden): if: type IN (push, api, cron)
-  cmake-win32:
-    runs-on: ubuntu-18.04
-    steps:
-    - uses: actions/checkout@v2
-    - run: ./.travis/${{ github.job }} install
-    - run: ./.travis/${{ github.job }} script
-      env:
-        CC: gcc
+  # These are all passing, so I don't want to see them right now.
+  # # FIXME(robinlinden): if: type IN (push, api, cron)
+  # cmake-win32:
+  #   runs-on: ubuntu-18.04
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - run: ./.travis/${{ github.job }} install
+  #   - run: ./.travis/${{ github.job }} script
+  #     env:
+  #       CC: gcc
 
-  # FIXME(robinlinden): if: type IN (push, api, cron)
-  cmake-win64:
-    runs-on: ubuntu-18.04
-    steps:
-    - uses: actions/checkout@v2
-    - run: ./.travis/${{ github.job }} install
-    - run: ./.travis/${{ github.job }} script
-      env:
-        CC: gcc
+  # # FIXME(robinlinden): if: type IN (push, api, cron)
+  # cmake-win64:
+  #   runs-on: ubuntu-18.04
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - run: ./.travis/${{ github.job }} install
+  #   - run: ./.travis/${{ github.job }} script
+  #     env:
+  #       CC: gcc
 
-  # FIXME(robinlinden): if: type IN (push, api, cron)
-  cmake-osx:
-    runs-on: macos-10.15
-    steps:
-    - uses: actions/checkout@v2
-    - run: ./.travis/${{ github.job }} install
-    - run: ./.travis/${{ github.job }} script
-      env:
-        CC: clang
+  # # FIXME(robinlinden): if: type IN (push, api, cron)
+  # cmake-osx:
+  #   runs-on: macos-10.15
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - run: ./.travis/${{ github.job }} install
+  #   - run: ./.travis/${{ github.job }} script
+  #     env:
+  #       CC: clang
 
+# TODO
 # jobs:
 #   include:
 #     - stage: "Stage 1"
