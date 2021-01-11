@@ -37,8 +37,7 @@ run_static_analysis() {
   export LDFLAGS="-L$CACHEDIR/lib"
   cat toxav/*.c toxcore/*.c toxencryptsave/*.c |
     clang "$(pkg-config --cflags libsodium opus vpx)" \
-      -Itoxav -Itoxcore -Itoxencryptsave -S -emit-llvm -xc - -o- |
-    opt -analyze -print-callgraph 2>&1 #| other/analysis/check_recursion
+      -Itoxav -Itoxcore -Itoxencryptsave -S -emit-llvm -xc - -o- # | opt -analyze -print-callgraph 2>&1 #| other/analysis/check_recursion
   other/analysis/run-clang
   other/analysis/run-clang-analyze
 }
