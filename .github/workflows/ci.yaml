@@ -11,16 +11,19 @@ jobs:
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
-    - run: sudo apt update && sudo apt install libconfig-dev libopus-dev libsodium-dev libgtest-dev libvpx-dev ninja-build pylint
+    - uses: actions/setup-python@v2
+      with:
+        python-version: "3.9"
+    - run: sudo apt update && sudo apt install libconfig-dev libopus-dev libsodium-dev libgtest-dev libvpx-dev ninja-build pylint3 llvm
     - run: echo "~/.local/bin" >> $GITHUB_PATH
     - run: ./.travis/${{ github.job }} install
     - run: ./.travis/${{ github.job }} script
-    - run: ./.travis/upload-coverage
       env:
         CC: gcc
+    - run: ./.travis/upload-coverage
 
   autotools-linux:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
     - run: sudo update-ca-certificates
@@ -31,7 +34,7 @@ jobs:
         CC: clang
 
   tox-bootstrapd-docker:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
     - run: ./.travis/${{ github.job }}
