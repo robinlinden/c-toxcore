@@ -10,12 +10,17 @@ brew update
 
 brew install libconfig libsodium libvpx opus
 
+which coveralls || pip install --user cpp-coveralls
+
 . ".travis/flags-clang.sh"
 
 add_ld_flag -undefined error
 
 # Make compilation error on a warning
 add_flag -Werror
+
+# Coverage flags.
+add_flag -fprofile-arcs -ftest-coverage
 
 cmake -B_build -H. \
   -DCMAKE_C_FLAGS="$C_FLAGS" \

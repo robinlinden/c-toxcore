@@ -51,3 +51,5 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build and test
         run: .travis/cmake-osx
+      - name: Upload coverage
+        run: .travis/upload-coverage
