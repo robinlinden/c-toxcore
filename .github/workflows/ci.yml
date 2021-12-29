@@ -50,5 +50,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build and test
         run: .travis/cmake-osx
-      - name: Upload coverage
+
+  coverage-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and test
+        run: .travis/cmake-linux
+      - name: Build and test
         run: .travis/upload-coverage
