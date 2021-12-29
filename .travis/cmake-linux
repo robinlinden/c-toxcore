@@ -5,6 +5,7 @@ set -eu
 CACHEDIR="$HOME/cache"
 NPROC=$(nproc)
 
+sudo apt-get install -y --no-install-recommends libopus-dev libsodium-dev libvpx-dev
 which coveralls || pip install --user cpp-coveralls ninja
 
 . ".travis/flags-$CC.sh"

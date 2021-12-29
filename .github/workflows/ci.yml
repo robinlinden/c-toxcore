@@ -60,5 +60,5 @@ jobs:
         env:
           CC: gcc
           CXX: g++
-      - name: Build and test
+      - name: Upload coverage
         run: .travis/upload-coverage
