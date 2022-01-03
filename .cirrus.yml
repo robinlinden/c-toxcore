@@ -27,6 +27,7 @@ bazel-debug_task:
   test_all_script:
     - cd /src/workspace && bazel coverage -k
         --combined_report=none
+        --test_env=LCOV_MERGER=/bin/true
         --remote_http_cache=http://$CIRRUS_HTTP_CACHE_HOST
         --build_tag_filters=-haskell
         --test_tag_filters=-haskell
