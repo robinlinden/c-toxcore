@@ -37,8 +37,8 @@ bazel-debug_task:
         //c-toxcore/...
         -//c-toxcore/auto_tests:tcp_relay_test # TODO(robinlinden): Why does this pass locally but not in Cirrus?
     - cd /src/workspace && ls -la
-    - cd /src/workspace && ls -la bazel-out/_coverage/
-    - cd /src/workspace && cat bazel-out/_coverage/*
+    - cd /src/workspace && ls -la bazel-out/
+    - cd /src/workspace && find . -type f -name coverage.dat
 
 cimple_task:
   container:
