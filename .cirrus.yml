@@ -21,7 +21,7 @@ bazel-debug_task:
   container:
     image: toxchat/toktok-stack:0.0.31-debug
     cpu: 2
-    memory: 2G
+    memory: 4G
   configure_script:
     - /src/workspace/tools/inject-repo c-toxcore
   test_all_script:
