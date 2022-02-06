@@ -1,0 +1,43 @@
+#!/bin/bash
+
+set -eu
+
+# Set up environment
+export NDK=$ANDROID_NDK_LATEST_HOME
+
+export TARGET=armv7a-linux-androideabi
+# TODO(robinlinden): Work out the CMake Android ABI from TARGET.
+#                    Right now it defaults to armv7a.
+export NDK_API=16
+
+mkdir -p _android_prefix
+export PREFIX=$PWD/_android_prefix
+export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig
+
+export TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/linux-x86_64
+export SYSROOT=$TOOLCHAIN/sysroot
+
+export CC=$TOOLCHAIN/bin/$TARGET$NDK_API-clang
+export LDFLAGS=-static-libstdc++
+
+# Build libsodium
+git clone --branch=1.0.18 https://github.com/jedisct1/libsodium.git
+cd libsodium
+autoreconf -fi
+./configure --prefix=$PREFIX --host=$TARGET --with-sysroot=$SYSROOT --disable-shared
+make -j$(nproc) install
+cd ..
+
+# Build msgpack
+git clone --branch=c-4.0.0 https://github.com/msgpack/msgpack-c.git
+mkdir -p msgpack-c/build
+cd msgpack-c/build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_PREFIX_PATH=$PREFIX -DMSGPACK_BUILD_EXAMPLES=OFF
+cmake --build . --target install
+cd ../..
+
+# Build c-toxcore
+mkdir -p _build
+cd _build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_PREFIX_PATH=$PREFIX -DBUILD_TOXAV=OFF -DBOOTSTRAP_DAEMON=OFF
+cmake --build .
