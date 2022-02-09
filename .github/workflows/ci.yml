@@ -157,7 +157,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: .github/scripts/cmake-android
+      - run: .github/scripts/cmake-android armeabi-v7a
+      - run: .github/scripts/cmake-android arm64-v8a
+      - run: .github/scripts/cmake-android x86
+      - run: .github/scripts/cmake-android x86_64
 
   # buildifier:
   #   runs-on: ubuntu-latest
