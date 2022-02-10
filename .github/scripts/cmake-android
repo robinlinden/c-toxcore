@@ -3,7 +3,7 @@
 set -eu
 
 # Set up environment
-NDK=$ANDROID_NDK_LATEST_HOME
+NDK=$ANDROID_NDK_HOME
 
 ABI=${1:-"armeabi-v7a"}
 
