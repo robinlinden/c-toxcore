@@ -4,16 +4,17 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <threads.h>
 
 #include "auto_test_support.h"
 
-static void *proxy_routine(void *arg)
+static int proxy_routine(void *arg)
 {
     const char *proxy_bin = (const char *)arg;
     ck_assert(proxy_bin != nullptr);
     printf("starting http/sock5 proxy: %s\n", proxy_bin);
     ck_assert(system(proxy_bin) == 0);
-    return nullptr;
+    return 0;
 }
 
 static bool try_bootstrap(Tox *tox1, Tox *tox2, Tox *tox3, Tox *tox4)
@@ -55,8 +56,8 @@ int main(int argc, char **argv)
     setvbuf(stdout, nullptr, _IONBF, 0);
     if (argc >= 3) {
         char *proxy_bin = argv[2];
-        pthread_t proxy_thread;
-        pthread_create(&proxy_thread, nullptr, proxy_routine, proxy_bin);
+        thrd_t proxy_thread;
+        thrd_create(&proxy_thread, proxy_routine, proxy_bin);
         c_sleep(100);
     }
 

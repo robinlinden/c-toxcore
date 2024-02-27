@@ -92,7 +92,7 @@ DECODER_CLEANUP:
     opus_decoder_destroy(ac->decoder);
     jbuf_free((struct JitterBuffer *)ac->j_buf);
 BASE_CLEANUP:
-    pthread_mutex_destroy(ac->queue_mutex);
+    mtx_destroy(ac->queue_mutex);
     free(ac);
     return nullptr;
 }
@@ -107,7 +107,7 @@ void ac_kill(ACSession *ac)
     opus_decoder_destroy(ac->decoder);
     jbuf_free((struct JitterBuffer *)ac->j_buf);
 
-    pthread_mutex_destroy(ac->queue_mutex);
+    mtx_destroy(ac->queue_mutex);
 
     LOGGER_DEBUG(ac->log, "Terminated audio handler: %p", (void *)ac);
     free(ac);
@@ -129,13 +129,13 @@ void ac_iterate(ACSession *ac)
         return;
     }
 
-    pthread_mutex_lock(ac->queue_mutex);
+    mtx_lock(ac->queue_mutex);
     struct JitterBuffer *const j_buf = (struct JitterBuffer *)ac->j_buf;
 
     int rc = 0;
 
     for (struct RTPMessage *msg = jbuf_read(j_buf, &rc); msg != nullptr || rc == 2; msg = jbuf_read(j_buf, &rc)) {
-        pthread_mutex_unlock(ac->queue_mutex);
+        mtx_unlock(ac->queue_mutex);
 
         if (rc == 2) {
             LOGGER_DEBUG(ac->log, "OPUS correction");
@@ -156,7 +156,7 @@ void ac_iterate(ACSession *ac)
             if (!reconfigure_audio_decoder(ac, ac->lp_sampling_rate, ac->lp_channel_count)) {
                 LOGGER_WARNING(ac->log, "Failed to reconfigure decoder!");
                 free(msg);
-                pthread_mutex_lock(ac->queue_mutex);
+                mtx_lock(ac->queue_mutex);
                 continue;
             }
 
@@ -187,7 +187,7 @@ void ac_iterate(ACSession *ac)
         return;
     }
 
-    pthread_mutex_unlock(ac->queue_mutex);
+    mtx_unlock(ac->queue_mutex);
 
     free(temp_audio_buffer);
 }
@@ -213,9 +213,9 @@ int ac_queue_message(Mono_Time *mono_time, void *cs, struct RTPMessage *msg)
         return -1;
     }
 
-    pthread_mutex_lock(ac->queue_mutex);
+    mtx_lock(ac->queue_mutex);
     const int rc = jbuf_write(ac->log, (struct JitterBuffer *)ac->j_buf, msg);
-    pthread_mutex_unlock(ac->queue_mutex);
+    mtx_unlock(ac->queue_mutex);
 
     if (rc == -1) {
         LOGGER_WARNING(ac->log, "Could not queue the message!");

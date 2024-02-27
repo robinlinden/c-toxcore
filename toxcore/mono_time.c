@@ -29,7 +29,7 @@
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
 #include <assert.h>
 #endif /* FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION */
-#include <pthread.h>
+#include <stdatomic.h>
 #include <time.h>
 
 #include "attributes.h"
@@ -39,13 +39,8 @@
 
 /** don't call into system billions of times for no reason */
 struct Mono_Time {
-    uint64_t cur_time;
+    _Atomic uint64_t cur_time;
     uint64_t base_time;
-
-#ifndef ESP_PLATFORM
-    /* protect `time` from concurrent access */
-    pthread_rwlock_t *time_update_lock;
-#endif /* ESP_PLATFORM */
 
     mono_time_current_time_cb *current_time_callback;
     void *user_data;
@@ -118,26 +113,9 @@ Mono_Time *mono_time_new(const Memory *mem, mono_time_current_time_cb *current_t
         return nullptr;
     }
 
-#ifndef ESP_PLATFORM
-    pthread_rwlock_t *rwlock = (pthread_rwlock_t *)mem_alloc(mem, sizeof(pthread_rwlock_t));
-
-    if (rwlock == nullptr) {
-        mem_delete(mem, mono_time);
-        return nullptr;
-    }
-
-    if (pthread_rwlock_init(rwlock, nullptr) != 0) {
-        mem_delete(mem, rwlock);
-        mem_delete(mem, mono_time);
-        return nullptr;
-    }
-
-    mono_time->time_update_lock = rwlock;
-#endif /* ESP_PLATFORM */
-
     mono_time_set_current_time_callback(mono_time, current_time_callback, user_data);
 
-    mono_time->cur_time = 0;
+    atomic_init(&mono_time->cur_time, 0);
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
     // Maximum reproducibility. Never return time = 0.
     mono_time->base_time = 1000000000;
@@ -157,10 +135,6 @@ void mono_time_free(const Memory *mem, Mono_Time *mono_time)
     if (mono_time == nullptr) {
         return;
     }
-#ifndef ESP_PLATFORM
-    pthread_rwlock_destroy(mono_time->time_update_lock);
-    mem_delete(mem, mono_time->time_update_lock);
-#endif /* ESP_PLATFORM */
     mem_delete(mem, mono_time);
 }
 
@@ -169,26 +143,12 @@ void mono_time_update(Mono_Time *mono_time)
     const uint64_t cur_time =
         mono_time->base_time + mono_time->current_time_callback(mono_time->user_data);
 
-#ifndef ESP_PLATFORM
-    pthread_rwlock_wrlock(mono_time->time_update_lock);
-#endif /* ESP_PLATFORM */
     mono_time->cur_time = cur_time;
-#ifndef ESP_PLATFORM
-    pthread_rwlock_unlock(mono_time->time_update_lock);
-#endif /* ESP_PLATFORM */
 }
 
 uint64_t mono_time_get_ms(const Mono_Time *mono_time)
 {
-#if !defined(ESP_PLATFORM) && !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
-    // Fuzzing is only single thread for now, no locking needed */
-    pthread_rwlock_rdlock(mono_time->time_update_lock);
-#endif /* !ESP_PLATFORM */
-    const uint64_t cur_time = mono_time->cur_time;
-#if !defined(ESP_PLATFORM) && !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
-    pthread_rwlock_unlock(mono_time->time_update_lock);
-#endif /* !ESP_PLATFORM */
-    return cur_time;
+    return mono_time->cur_time;
 }
 
 uint64_t mono_time_get(const Mono_Time *mono_time)

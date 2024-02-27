@@ -5,8 +5,8 @@
 #ifndef C_TOXCORE_TOXAV_MSI_H
 #define C_TOXCORE_TOXAV_MSI_H
 
-#include <pthread.h>
 #include <stdint.h>
+#include <threads.h>
 
 #include "audio.h"
 #include "video.h"
@@ -98,7 +98,7 @@ typedef struct MSISession {
     void           *av;
     Messenger      *messenger;
 
-    pthread_mutex_t mutex[1];
+    mtx_t mutex[1];
 
     msi_action_cb *invite_callback;
     msi_action_cb *start_callback;

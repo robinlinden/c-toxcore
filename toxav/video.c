@@ -261,7 +261,7 @@ VCSession *vc_new(Mono_Time *mono_time, const Logger *log, ToxAV *av, uint32_t f
 BASE_CLEANUP_1:
     vpx_codec_destroy(vc->decoder);
 BASE_CLEANUP:
-    pthread_mutex_destroy(vc->queue_mutex);
+    mtx_destroy(vc->queue_mutex);
     rb_kill(vc->vbuf_raw);
     free(vc);
     return nullptr;
@@ -282,7 +282,7 @@ void vc_kill(VCSession *vc)
     }
 
     rb_kill(vc->vbuf_raw);
-    pthread_mutex_destroy(vc->queue_mutex);
+    mtx_destroy(vc->queue_mutex);
     LOGGER_DEBUG(vc->log, "Terminated video handler: %p", (void *)vc);
     free(vc);
 }
@@ -293,18 +293,18 @@ void vc_iterate(VCSession *vc)
         return;
     }
 
-    pthread_mutex_lock(vc->queue_mutex);
+    mtx_lock(vc->queue_mutex);
 
     struct RTPMessage *p;
 
     if (!rb_read(vc->vbuf_raw, (void **)&p)) {
         LOGGER_TRACE(vc->log, "no Video frame data available");
-        pthread_mutex_unlock(vc->queue_mutex);
+        mtx_unlock(vc->queue_mutex);
         return;
     }
 
     const uint16_t log_rb_size = rb_size(vc->vbuf_raw);
-    pthread_mutex_unlock(vc->queue_mutex);
+    mtx_unlock(vc->queue_mutex);
     const struct RTPHeader *const header = &p->header;
 
     uint32_t full_data_len;
@@ -371,7 +371,7 @@ int vc_queue_message(Mono_Time *mono_time, void *cs, struct RTPMessage *msg)
         return -1;
     }
 
-    pthread_mutex_lock(vc->queue_mutex);
+    mtx_lock(vc->queue_mutex);
 
     if ((header->flags & RTP_LARGE_FRAME) != 0 && header->pt == RTP_TYPE_VIDEO % 128) {
         LOGGER_DEBUG(vc->log, "rb_write msg->len=%d b0=%d b1=%d", (int)msg->len, (int)msg->data[0], (int)msg->data[1]);
@@ -383,7 +383,7 @@ int vc_queue_message(Mono_Time *mono_time, void *cs, struct RTPMessage *msg)
     const uint32_t t_lcfd = current_time_monotonic(mono_time) - vc->linfts;
     vc->lcfd = t_lcfd > 100 ? vc->lcfd : t_lcfd;
     vc->linfts = current_time_monotonic(mono_time);
-    pthread_mutex_unlock(vc->queue_mutex);
+    mtx_unlock(vc->queue_mutex);
     return 0;
 }
 

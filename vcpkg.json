@@ -5,7 +5,6 @@
     "libsodium",
     "libvpx",
     "opus",
-    "pthreads",
     "winsock2"
   ]
 }

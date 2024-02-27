@@ -6,7 +6,7 @@
 #ifndef C_TOXCORE_TOXCORE_TOX_STRUCT_H
 #define C_TOXCORE_TOXCORE_TOX_STRUCT_H
 
-#include <pthread.h>
+#include <threads.h>
 
 #include "Messenger.h"
 #include "mem.h"
@@ -22,7 +22,7 @@ struct Tox {
     Messenger *m;
     Mono_Time *mono_time;
     Tox_System sys;
-    pthread_mutex_t *mutex;
+    mtx_t *mutex;
 
     tox_log_cb *log_callback;
     tox_self_connection_status_cb *self_connection_status_callback;

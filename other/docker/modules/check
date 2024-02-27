@@ -41,6 +41,7 @@ STD_MODULE = """module std [system] {
   textual header "/usr/include/stdint.h"
   textual header "/usr/include/sys/time.h"
   textual header "/usr/include/sys/types.h"
+  textual header "/usr/include/threads.h"
   textual header "/usr/include/time.h"
 }
 module "//c-toxcore/third_party:cmp" {
@@ -57,9 +58,6 @@ module "@com_google_googletest//:gtest" {
 }
 module "@libsodium" {
   textual header "/usr/include/sodium.h"
-}
-module "@pthread" {
-  textual header "/usr/include/pthread.h"
 }
 module "@psocket" {
   textual header "/usr/include/arpa/inet.h"

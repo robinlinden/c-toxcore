@@ -5,12 +5,12 @@ from typing import Tuple
 
 ALLOWLIST: Tuple[str, ...] = (
     # system headers
-    "pthread.h",
     "stdarg.h",
     "stdbool.h",
     "stddef.h",
     "stdint.h",
     "time.h",  # time_t used in Messenger.h TODO(iphydf): maybe don't?
+    "threads.h",
     # toxav stuff, maybe not worth abstracting away
     "opus.h",
     "vpx/vp8cx.h",

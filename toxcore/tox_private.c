@@ -9,6 +9,7 @@
 #include "tox_private.h"
 
 #include <assert.h>
+#include <threads.h>
 
 #include "DHT.h"
 #include "attributes.h"
@@ -44,14 +45,14 @@ Tox_System tox_default_system(void)
 void tox_lock(const Tox *tox)
 {
     if (tox->mutex != nullptr) {
-        pthread_mutex_lock(tox->mutex);
+        mtx_lock(tox->mutex);
     }
 }
 
 void tox_unlock(const Tox *tox)
 {
     if (tox->mutex != nullptr) {
-        pthread_mutex_unlock(tox->mutex);
+        mtx_unlock(tox->mutex);
     }
 }
 

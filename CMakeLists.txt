@@ -94,8 +94,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 message(STATUS "Supported C compiler features = ${CMAKE_C_COMPILE_FEATURES}")
 message(STATUS "Supported C++ compiler features = ${CMAKE_CXX_COMPILE_FEATURES}")
 
-# Enable some warnings if we know the compiler.
 if(MSVC)
+  # C11 atomics are experimental in MSVC.
+  add_compile_options(/experimental:c11atomics)
+
+  # Enable some warnings if we know the compiler.
   add_compile_options(/W4 /analyze)
   add_compile_options(/wd4100)  # unreferenced formal parameter
   add_compile_options(/wd4267)  # narrowing conversion
@@ -448,9 +451,7 @@ if(SOCKET_LIBRARIES)
   set(toxcore_PKGCONFIG_LIBS ${toxcore_PKGCONFIG_LIBS} -lsocket)
 endif()
 
-if(TARGET PThreads4W::PThreads4W)
-  set(toxcore_LINK_LIBRARIES ${toxcore_LINK_LIBRARIES} PThreads4W::PThreads4W)
-elseif(TARGET Threads::Threads)
+if(TARGET Threads::Threads)
   set(toxcore_LINK_LIBRARIES ${toxcore_LINK_LIBRARIES} Threads::Threads)
 endif()
 if(WIN32)
@@ -582,9 +583,7 @@ if(DHT_BOOTSTRAP)
   if(TARGET unofficial-sodium::sodium)
     target_link_libraries(DHT_bootstrap PRIVATE unofficial-sodium::sodium)
   endif()
-  if(TARGET PThreads4W::PThreads4W)
-    target_link_libraries(DHT_bootstrap PRIVATE PThreads4W::PThreads4W)
-  elseif(TARGET Threads::Threads)
+  if(TARGET Threads::Threads)
     target_link_libraries(DHT_bootstrap PRIVATE Threads::Threads)
   endif()
   install(TARGETS DHT_bootstrap RUNTIME DESTINATION bin)

@@ -224,8 +224,7 @@ you're using.
 You must also ensure that the msvc versions of dependencies you're using are
 placed in the correct folders.
 
-For libsodium that is `c-toxcore/third_party/libsodium`, and for pthreads-w32,
-it's `c-toxcore/third_party/pthreads-win32`
+For libsodium that is `c-toxcore/third_party/libsodium`
 
 Once all of this is done, from the **Developer Command Prompt for VS**, simply
 run

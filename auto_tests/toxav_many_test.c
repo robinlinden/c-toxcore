@@ -3,11 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <threads.h>
 #include <time.h>
-
-#if !defined(_WIN32) && !defined(__WIN32__) && !defined(WIN32)
-#include <pthread.h>
-#endif
 
 #include <vpx/vpx_image.h>
 
@@ -92,7 +89,7 @@ static ToxAV *setup_av_instance(Tox *tox, CallControl *cc)
     return av;
 }
 
-static void *call_thread(void *pd)
+static int call_thread(void *pd)
 {
     ToxAV *alice_av = ((Thread_Data *) pd)->alice_av;
     ToxAV *bob_av = ((Thread_Data *) pd)->bob_av;
@@ -124,30 +121,30 @@ static void *call_thread(void *pd)
     free(video_v);
 
     printf("Closing thread\n");
-    pthread_exit(nullptr);
+    thrd_exit(0);
 
-    return nullptr;
+    return 0;
 }
 
 typedef struct Time_Data {
-    pthread_mutex_t lock;
+    mtx_t lock;
     uint64_t clock;
 } Time_Data;
 
 static uint64_t get_state_clock_callback(void *user_data)
 {
     Time_Data *time_data = (Time_Data *)user_data;
-    pthread_mutex_lock(&time_data->lock);
+    mtx_lock(&time_data->lock);
     uint64_t clock = time_data->clock;
-    pthread_mutex_unlock(&time_data->lock);
+    mtx_unlock(&time_data->lock);
     return clock;
 }
 
 static void increment_clock(Time_Data *time_data, uint64_t count)
 {
-    pthread_mutex_lock(&time_data->lock);
+    mtx_lock(&time_data->lock);
     time_data->clock += count;
-    pthread_mutex_unlock(&time_data->lock);
+    mtx_unlock(&time_data->lock);
 }
 
 static void set_current_time_callback(Tox *tox, Time_Data *time_data)
@@ -161,12 +158,12 @@ static void test_av_three_calls(void)
     uint32_t index[] = { 1, 2, 3, 4, 5 };
     Tox *alice, *bootstrap, *bobs[3];
     ToxAV *alice_av, *bobs_av[3];
-    void *retval;
+    int retval;
 
     CallControl alice_cc[3], bobs_cc[3];
 
     Time_Data time_data;
-    pthread_mutex_init(&time_data.lock, nullptr);
+    mtx_init(&time_data.lock, mtx_plain);
     {
         Tox_Err_New error;
 
@@ -268,10 +265,10 @@ static void test_av_three_calls(void)
         memset(tds[i].bob_cc, 0, sizeof(CallControl));
     }
 
-    pthread_t tids[3];
+    thrd_t tids[3];
 
     for (size_t i = 0; i < 3; i++) {
-        (void) pthread_create(&tids[i], nullptr, call_thread, &tds[i]);
+        (void) thrd_create(&tids[i], call_thread, &tds[i]);
     }
 
     time_t start_time = time(nullptr);
@@ -345,14 +342,14 @@ static void test_av_three_calls(void)
         c_sleep(5);
     } while (time(nullptr) - start_time < 5);
 
-    ck_assert(pthread_join(tids[0], &retval) == 0);
-    ck_assert(retval == nullptr);
+    ck_assert(thrd_join(tids[0], &retval) == 0);
+    ck_assert(retval == 0);
 
-    ck_assert(pthread_join(tids[1], &retval) == 0);
-    ck_assert(retval == nullptr);
+    ck_assert(thrd_join(tids[1], &retval) == 0);
+    ck_assert(retval == 0);
 
-    ck_assert(pthread_join(tids[2], &retval) == 0);
-    ck_assert(retval == nullptr);
+    ck_assert(thrd_join(tids[2], &retval) == 0);
+    ck_assert(retval == 0);
 
     printf("Killing all instances\n");
     toxav_kill(bobs_av[2]);
@@ -365,7 +362,7 @@ static void test_av_three_calls(void)
     tox_kill(alice);
     tox_kill(bootstrap);
 
-    pthread_mutex_destroy(&time_data.lock);
+    mtx_destroy(&time_data.lock);
 
     printf("\nTest successful!\n");
 }

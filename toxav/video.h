@@ -12,7 +12,7 @@
 #include <vpx/vp8cx.h>
 #include <vpx/vp8dx.h>
 
-#include <pthread.h>
+#include <threads.h>
 
 #include "toxav.h"
 
@@ -41,7 +41,7 @@ typedef struct VCSession {
     toxav_video_receive_frame_cb *vcb;
     void *vcb_user_data;
 
-    pthread_mutex_t queue_mutex[1];
+    mtx_t queue_mutex[1];
 } VCSession;
 
 VCSession *vc_new(Mono_Time *mono_time, const Logger *log, ToxAV *av, uint32_t friend_number,

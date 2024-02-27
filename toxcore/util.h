@@ -10,10 +10,10 @@
 #ifndef C_TOXCORE_TOXCORE_UTIL_H
 #define C_TOXCORE_TOXCORE_UTIL_H
 
-#include <pthread.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <threads.h>
 
 #include "attributes.h"
 #include "mem.h"
@@ -29,7 +29,7 @@ non_null(1) nullable(2)
 void free_uint8_t_pointer_array(const Memory *mem, uint8_t **ary, size_t n_items);
 
 /** Returns -1 if failed or 0 if success */
-non_null() int create_recursive_mutex(pthread_mutex_t *mutex);
+non_null() int create_recursive_mutex(mtx_t *mutex);
 
 /**
  * @brief Checks whether two buffers are the same length and contents.

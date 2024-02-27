@@ -14,6 +14,7 @@
 
 #include <assert.h>
 #include <string.h>
+#include <threads.h>
 
 #include "DHT.h"
 #include "Messenger.h"
@@ -878,7 +879,7 @@ Tox *tox_new(const struct Tox_Options *options, Tox_Err_New *error)
     }
 
     if (tox_options_get_experimental_thread_safety(opts)) {
-        pthread_mutex_t *mutex = (pthread_mutex_t *)mem_alloc(sys->mem, sizeof(pthread_mutex_t));
+        mtx_t *mutex = (mtx_t *)mem_alloc(sys->mem, sizeof(mtx_t));
 
         if (mutex == nullptr) {
             SET_ERROR_PARAMETER(error, TOX_ERR_NEW_MALLOC);
@@ -887,7 +888,7 @@ Tox *tox_new(const struct Tox_Options *options, Tox_Err_New *error)
             return nullptr;
         }
 
-        pthread_mutex_init(mutex, nullptr);
+        mtx_init(mutex, mtx_plain);
 
         tox->mutex = mutex;
     } else {
@@ -917,7 +918,7 @@ Tox *tox_new(const struct Tox_Options *options, Tox_Err_New *error)
         tox_unlock(tox);
 
         if (tox->mutex != nullptr) {
-            pthread_mutex_destroy(tox->mutex);
+            mtx_destroy(tox->mutex);
         }
 
         mem_delete(sys->mem, tox->mutex);
@@ -935,7 +936,7 @@ Tox *tox_new(const struct Tox_Options *options, Tox_Err_New *error)
         tox_unlock(tox);
 
         if (tox->mutex != nullptr) {
-            pthread_mutex_destroy(tox->mutex);
+            mtx_destroy(tox->mutex);
         }
 
         mem_delete(sys->mem, tox->mutex);
@@ -955,7 +956,7 @@ Tox *tox_new(const struct Tox_Options *options, Tox_Err_New *error)
         tox_unlock(tox);
 
         if (tox->mutex != nullptr) {
-            pthread_mutex_destroy(tox->mutex);
+            mtx_destroy(tox->mutex);
         }
 
         mem_delete(sys->mem, tox->mutex);
@@ -1034,7 +1035,7 @@ void tox_kill(Tox *tox)
     tox_unlock(tox);
 
     if (tox->mutex != nullptr) {
-        pthread_mutex_destroy(tox->mutex);
+        mtx_destroy(tox->mutex);
         mem_delete(tox->sys.mem, tox->mutex);
     }
 

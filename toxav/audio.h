@@ -5,8 +5,9 @@
 #ifndef C_TOXCORE_TOXAV_AUDIO_H
 #define C_TOXCORE_TOXAV_AUDIO_H
 
+#include <threads.h>
+
 #include <opus.h>
-#include <pthread.h>
 
 #include "toxav.h"
 
@@ -54,7 +55,7 @@ typedef struct ACSession {
     uint64_t ldrts; /* Last decoder reconfiguration time stamp */
     void *j_buf;
 
-    pthread_mutex_t queue_mutex[1];
+    mtx_t queue_mutex[1];
 
     ToxAV *av;
     uint32_t friend_number;

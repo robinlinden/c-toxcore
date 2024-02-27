@@ -9,7 +9,7 @@
 #ifndef C_TOXCORE_TOXCORE_NET_CRYPTO_H
 #define C_TOXCORE_TOXCORE_NET_CRYPTO_H
 
-#include <pthread.h>
+#include <threads.h>
 
 #include "DHT.h"
 #include "LAN_discovery.h"

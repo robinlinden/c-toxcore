@@ -9,12 +9,7 @@ find_package(PkgConfig REQUIRED)
 find_library(NSL_LIBRARIES    nsl   )
 find_library(RT_LIBRARIES     rt    )
 find_library(SOCKET_LIBRARIES socket)
-
-find_package(pthreads QUIET)
-if(NOT TARGET PThreads4W::PThreads4W)
-  set(THREADS_PREFER_PTHREAD_FLAG ON)
-  find_package(Threads REQUIRED)
-endif()
+find_package(Threads REQUIRED)
 
 # For toxcore.
 pkg_search_module(LIBSODIUM   libsodium IMPORTED_TARGET REQUIRED)

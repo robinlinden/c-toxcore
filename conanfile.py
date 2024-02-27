@@ -65,10 +65,6 @@ class ToxConan(ConanFile):
             version_patch.strip(),
         )
 
-    def requirements(self):
-        if self.settings.os == "Windows":
-            self.requires("pthreads4w/3.0.0")
-
     def build(self):
         cmake = self._create_cmake()
         cmake.build()
